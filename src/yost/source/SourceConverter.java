@@ -17,6 +17,7 @@ public class SourceConverter {
 	private void convertPythonToCpp(String filename) {
 		String outHpp = "";
 		String outCpp = "";
+		String output = "";
 		String content = readFile(filename + ".py");
 		String token = "";
 		int findent = 0;
@@ -46,10 +47,10 @@ public class SourceConverter {
 					if (!lineContinue && bracketDepth == 0) {
 						while (lastIndent > indent) {
 							lastIndent--;
-							outCpp += "\t".repeat(lastIndent) + "}\n";
+							output += "\t".repeat(lastIndent) + "}\n";
 						}
 					}
-					outCpp += token;
+					output += token;
 					token = "";
 				}
 				if (!inComment && !inLineComment) {
@@ -102,7 +103,7 @@ public class SourceConverter {
 						}
 					}
 					
-					outCpp += token + c;
+					output += token + c;
 					token = "";
 				} else if (c == '#') {
 					token += "//";
@@ -119,16 +120,19 @@ public class SourceConverter {
 			}
 		}
 		
-		outCpp += token;
+		output += token;
 		while (lastIndent > 0) {
 			lastIndent--;
-			outCpp += "\t".repeat(lastIndent) + "}\n";
+			output += "\t".repeat(lastIndent) + "}\n";
 		}
 		
-		outCpp = lineOperations(outCpp);
+		output = lineOperations(output);
 		
-		writeFile(outHpp, filename + ".h");
-		writeFile(outCpp, filename + ".cpp");
+		// * TODO: sort properties/methods into h/cpp from general output
+		
+		//writeFile(outHpp, filename + ".h");
+		//writeFile(outCpp, filename + ".cpp");
+		writeFile(output, filename + ".cpp");
 	}
 
 	private String lineOperations(String input) {
